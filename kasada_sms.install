@@ -1,0 +1,46 @@
+function kasada_sms_schema() {
+  $schema['kasada_sms_otp'] = [
+    'description' => 'Stores OTPs for mobile verification',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ],
+      'mobile' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+      ],
+      'otp_hash' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'expires' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'verified' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'mobile' => ['mobile'],
+    ],
+  ];
+
+  return $schema;
+}

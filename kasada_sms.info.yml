@@ -1,0 +1,5 @@
+name: Kasada SMS & OTP
+type: module
+description: SMS sending and OTP verification using text.lk
+core_version_requirement: ^10
+package: Kasada

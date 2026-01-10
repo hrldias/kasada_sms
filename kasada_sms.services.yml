@@ -1,0 +1,13 @@
+services:
+  kasada_sms.textlk:
+    class: Drupal\kasada_sms\Service\TextLkClient
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+
+  kasada_sms.otp:
+    class: Drupal\kasada_sms\Service\OtpManager
+    arguments:
+      - '@database'
+      - '@kasada_sms.textlk'
+      - '@current_user'

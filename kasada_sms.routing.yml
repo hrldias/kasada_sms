@@ -1,0 +1,7 @@
+kasada_sms.settings:
+  path: '/admin/config/kasada/sms'
+  defaults:
+    _form: '\Drupal\kasada_sms\Form\KasadaSmsSettingsForm'
+    _title: 'Kasada SMS settings'
+  requirements:
+    _permission: 'administer site configuration'
