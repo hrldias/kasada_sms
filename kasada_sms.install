@@ -1,3 +1,4 @@
+<?php
 function kasada_sms_schema() {
   $schema['kasada_sms_otp'] = [
     'description' => 'Stores OTPs for mobile verification',

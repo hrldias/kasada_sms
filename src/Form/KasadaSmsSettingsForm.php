@@ -1,3 +1,4 @@
+<?php
 namespace Drupal\kasada_sms\Form;
 
 use Drupal\Core\Form\ConfigFormBase;

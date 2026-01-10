@@ -1,3 +1,4 @@
+<?php
 namespace Drupal\kasada_sms\Service;
 
 use Drupal\Core\Database\Connection;
