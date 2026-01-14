@@ -2,11 +2,13 @@
 
 namespace Drupal\kasada_sms\Service;
 
+use Drupal\kasada_sms\Service\MessageChannelInterface;
 use GuzzleHttp\ClientInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
-class TextLkClient
-{
+
+
+class TextLkClient implements MessageChannelInterface {
 
   protected ClientInterface $httpClient;
   protected string $apiKey;

@@ -1,13 +1,17 @@
 services:
-  kasada_sms.textlk:
+  kasada_sms.sms:
     class: Drupal\kasada_sms\Service\TextLkClient
     arguments:
       - '@http_client'
       - '@config.factory'
 
+  kasada_sms.whatsapp:
+    class: Drupal\kasada_sms\Service\WhatsAppClient
+
   kasada_sms.otp:
     class: Drupal\kasada_sms\Service\OtpManager
     arguments:
+      - '@kasada_sms.sms'
+      - '@kasada_sms.whatsapp'
       - '@database'
-      - '@kasada_sms.textlk'
       - '@current_user'

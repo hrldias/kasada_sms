@@ -41,7 +41,7 @@ class KasadaSmsTestForm extends FormBase {
 
     try {
       /** @var \Drupal\kasada_sms\Service\TextLkClient $sms */
-      $sms = \Drupal::service('kasada_sms.textlk');
+      $sms = \Drupal::service('kasada_sms.sms');
 
       if ($sms->send($mobile, $message)) {
         $this->messenger()->addStatus(

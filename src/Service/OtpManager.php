@@ -4,31 +4,47 @@ namespace Drupal\kasada_sms\Service;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Session\AccountProxyInterface;
 
+use Drupal\kasada_sms\Service\MessageChannelInterface;
+
 class OtpManager {
 
   protected Connection $db;
-  protected TextLkClient $sms;
+  
   protected AccountProxyInterface $currentUser;
 
-  public function __construct(Connection $db, TextLkClient $sms, AccountProxyInterface $current_user) {
-    $this->db = $db;
+  protected MessageChannelInterface $sms;
+  protected MessageChannelInterface $whatsapp;
+
+  public function __construct(
+    MessageChannelInterface $sms,
+    MessageChannelInterface $whatsapp,
+    Connection $db,
+    AccountProxyInterface $current_user
+  ) {
     $this->sms = $sms;
+    $this->whatsapp = $whatsapp;
+    $this->db = $db;
     $this->currentUser = $current_user;
   }
 
-  public function sendOtp(string $mobile): void {
-    $otp = random_int(100000, 999999);
+  public function sendOtp(string $mobile, string $channel = 'sms'): void {
+  $this->assertRateLimit();
 
-    $this->db->insert('kasada_sms_otp')->fields([
-      'uid' => $this->currentUser->id(),
-      'mobile' => $mobile,
-      'otp_hash' => hash('sha256', $otp),
-      'created' => time(),
-      'expires' => time() + 300,
-    ])->execute();
+  $otp = random_int(100000, 999999);
 
-    $this->sms->send($mobile, "Your OTP is $otp");
+  $this->storeOtp($mobile, $otp);
+
+  $message = "Your OTP is {$otp}";
+
+  $sender = match ($channel) {
+    'whatsapp' => $this->whatsapp,
+    default => $this->sms,
+  };
+
+  if (!$sender->send($mobile, $message)) {
+    throw new \RuntimeException('OTP delivery failed.');
   }
+}
 
   public function verifyOtp(string $mobile, string $otp): bool {
     $hash = hash('sha256', $otp);
