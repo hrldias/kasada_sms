@@ -5,3 +5,12 @@ kasada_sms.settings:
     _title: 'Kasada SMS settings'
   requirements:
     _permission: 'administer site configuration'
+
+
+kasada_sms.test:
+  path: '/admin/config/kasada/sms/test'
+  defaults:
+    _form: '\Drupal\kasada_sms\Form\KasadaSmsTestForm'
+    _title: 'Send test SMS'
+  requirements:
+    _permission: 'administer site configuration'

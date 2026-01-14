@@ -1,0 +1,88 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function kasada_sms_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+   
+  \Drupal::logger('debug')->notice('Form alter fired for @id', ['@id' => $form_id]);
+
+  // CHANGE THIS to your actual webform machine name
+  if ($form_id !== 'webform_submission_private_profile_add_form') {
+    return;
+  }
+
+  // Attach AJAX to "Send OTP" button.
+  if (isset($form['elements']['send_otp'])) {
+    $form['elements']['send_otp']['#ajax'] = [
+      'callback' => 'kasada_sms_send_otp_ajax',
+      'wrapper' => 'otp-wrapper',
+      'event' => 'click',
+    ];
+  }
+
+  // Attach AJAX to "Verify OTP" button.
+  if (isset($form['elements']['verify_otp'])) {
+    $form['elements']['verify_otp']['#ajax'] = [
+      'callback' => 'kasada_sms_verify_otp_ajax',
+      'wrapper' => 'otp-wrapper',
+      'event' => 'click',
+    ];
+  }
+}
+
+
+/**
+ * AJAX callback: Send OTP.
+ */
+function kasada_sms_send_otp_ajax(array &$form, FormStateInterface $form_state) {
+  $mobile = $form_state->getValue('mobile_number');
+
+  if (empty($mobile)) {
+    $form['elements']['otp_wrapper']['status']['#markup'] =
+      '<div class="messages messages--error">Please enter a mobile number.</div>';
+    return $form['elements']['otp_wrapper'];
+  }
+
+  try {
+    /** @var \Drupal\kasada_sms\Service\OtpManager $otp */
+    $otp = \Drupal::service('kasada_sms.otp');
+    $otp->sendOtp($mobile);
+
+    $form['elements']['otp_wrapper']['#access'] = TRUE;
+    $form['elements']['otp_wrapper']['status']['#markup'] =
+      '<div class="messages messages--status">OTP sent successfully.</div>';
+  }
+  catch (\Exception $e) {
+    $form['elements']['otp_wrapper']['status']['#markup'] =
+      '<div class="messages messages--error">' . $e->getMessage() . '</div>';
+  }
+
+  return $form['elements']['otp_wrapper'];
+}
+
+/**
+ * AJAX callback: Verify OTP.
+ */
+function kasada_sms_verify_otp_ajax(array &$form, FormStateInterface $form_state) {
+  $mobile = $form_state->getValue('mobile_number');
+  $otp = $form_state->getValue('otp');
+
+  /** @var \Drupal\kasada_sms\Service\OtpManager $otp */
+  $otpManager = \Drupal::service('kasada_sms.otp');
+
+  if ($otpManager->verifyOtp($mobile, $otp)) {
+    $form_state->setValue('mobile_verified', 1);
+
+    $form['elements']['otp_wrapper']['status']['#markup'] =
+      '<div class="messages messages--status">Mobile verified successfully.</div>';
+  }
+  else {
+    $form['elements']['otp_wrapper']['status']['#markup'] =
+      '<div class="messages messages--error">Invalid OTP.</div>';
+  }
+
+  return $form['elements']['otp_wrapper'];
+}

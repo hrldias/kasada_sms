@@ -1,0 +1,23 @@
+# Parent menu item
+kasada.admin:
+  title: 'Kasada'
+  description: 'Kasada configuration settings'
+  route_name: kasada_sms.settings
+  parent: system.admin_config
+  weight: -100
+
+# SMS settings page
+kasada.sms_settings:
+  title: 'SMS settings'
+  description: 'Configure SMS gateway and sender ID'
+  route_name: kasada_sms.settings
+  parent: kasada.admin
+  weight: 0
+
+# Test SMS page
+kasada.sms_test:
+  title: 'Send test SMS'
+  description: 'Send a test SMS using text.lk'
+  route_name: kasada_sms.test
+  parent: kasada.admin
+  weight: 10
